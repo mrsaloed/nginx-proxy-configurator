@@ -1,0 +1,8 @@
+nginx:
+  path: "C:\\nginx\\nginx-1.23.3\\"
+  config:
+    path: "C:\\nginx\\nginx-1.23.3\\conf\\nginx.conf"
+    template-path: "C:\\nginx\\nginx-1.23.3\\conf\\nginx-config-template.txt"
+
+server:
+  port: 8081
