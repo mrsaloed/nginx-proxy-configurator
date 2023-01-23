@@ -17,28 +17,27 @@ import java.util.Formatter;
 @Controller
 @RequestMapping("/proxy-config")
 public class ProxyController {
+    private static final String NGINX_RELOAD = "service nginx reload";
     @Value("${nginx.config.path}")
     private String confPath;
-    @Value("${nginx.path}")
-    private String nginxPath;
     @Value("${nginx.config.template-path}")
     private String templatePath;
 
     @GetMapping
     public String doGet() {
-        return "hello";
+        return "proxy-config";
     }
 
     @PostMapping
     public String doPost(@RequestParam String host, @RequestParam int port) {
         setHost(host, port);
         reloadNginx();
-        return "hello";
+        return "proxy-config";
     }
 
     private void reloadNginx() {
         try {
-            Process proc = Runtime.getRuntime().exec("service nginx reload");
+            Process proc = Runtime.getRuntime().exec(NGINX_RELOAD);
             proc.waitFor();
             proc.destroy();
         } catch (IOException | InterruptedException e) {

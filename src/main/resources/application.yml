@@ -1,8 +1,7 @@
 nginx:
-  path: "C:\\nginx\\nginx-1.23.3\\nginx.exe"
   config:
     path: "/usr/local/etc/nginx/nginx.conf"
-    template-path: "/nginx-proxy-configurator/nginx-config-template.txt"
+    template-path: "nginx-config-template.txt"
 
 server:
   port: 8081
