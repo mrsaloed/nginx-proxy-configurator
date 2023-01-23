@@ -38,7 +38,7 @@ public class ProxyController {
 
     private void reloadNginx() {
         try {
-            Process proc = Runtime.getRuntime().exec(nginxPath + " -s reload");
+            Process proc = Runtime.getRuntime().exec("service nginx reload");
             proc.waitFor();
             proc.destroy();
         } catch (IOException | InterruptedException e) {
