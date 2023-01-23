@@ -32,11 +32,18 @@ public class ProxyController {
     @PostMapping
     public String doPost(@RequestParam String host, @RequestParam int port) {
         setHost(host, port);
-        return "redirect:/";
+        reloadNginx();
+        return "hello";
     }
 
     private void reloadNginx() {
-
+        try {
+            Process proc = Runtime.getRuntime().exec(nginxPath + " -s reload");
+            proc.waitFor();
+            proc.destroy();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setHost(String host, int port) {

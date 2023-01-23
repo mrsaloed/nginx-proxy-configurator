@@ -1,5 +1,5 @@
 nginx:
-  path: "C:\\nginx\\nginx-1.23.3\\"
+  path: "C:\\nginx\\nginx-1.23.3\\nginx.exe"
   config:
     path: "C:\\nginx\\nginx-1.23.3\\conf\\nginx.conf"
     template-path: "C:\\nginx\\nginx-1.23.3\\conf\\nginx-config-template.txt"
