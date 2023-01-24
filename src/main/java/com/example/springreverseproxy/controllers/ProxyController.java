@@ -1,8 +1,12 @@
 package com.example.springreverseproxy.controllers;
 
+import com.example.springreverseproxy.Application;
+import com.example.springreverseproxy.repository.ApplicationRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,14 +26,23 @@ public class ProxyController {
     private String confPath;
     @Value("${nginx.config.template-path}")
     private String templatePath;
+    @Autowired
+    private ApplicationRepository applicationRepository;
 
     @GetMapping
-    public String doGet() {
+    public String doGet(Model model) {
+        Iterable<Application> apps = applicationRepository.findAll();
+        model.addAttribute("apps", apps);
         return "proxy-config";
     }
 
     @PostMapping
-    public String doPost(@RequestParam String host, @RequestParam int port) {
+    public String doPost(@RequestParam String appName,
+                         @RequestParam String host,
+                         @RequestParam int port,
+                         Model model) {
+        Application app = new Application(appName, host, port);
+        applicationRepository.save(app);
         setHost(host, port);
         reloadNginx();
         return "proxy-config";

@@ -1,4 +1,7 @@
 package com.example.springreverseproxy.repository;
 
-public class ApplicationRepository {
+import com.example.springreverseproxy.Application;
+import org.springframework.data.repository.CrudRepository;
+
+public interface ApplicationRepository extends CrudRepository<Application, Long> {
 }
