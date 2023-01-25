@@ -1,77 +1,55 @@
 package com.example.springreverseproxy.controllers;
 
-import com.example.springreverseproxy.Application;
-import com.example.springreverseproxy.repository.ApplicationRepository;
-import lombok.extern.slf4j.Slf4j;
+import com.example.springreverseproxy.models.Application;
+
+import com.example.springreverseproxy.services.ApplicationService;
+import com.example.springreverseproxy.services.NginxService;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Formatter;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
 @RequestMapping("/proxy-config")
 public class ProxyController {
-    private static final String NGINX_RELOAD = "service nginx reload";
-    @Value("${nginx.config.path}")
-    private String confPath;
-    @Value("${nginx.config.template-path}")
-    private String templatePath;
+
+    private final NginxService nginxService;
+    private final ApplicationService applicationService;
+
     @Autowired
-    private ApplicationRepository applicationRepository;
+    public ProxyController(NginxService nginxService, ApplicationService applicationService) {
+        this.nginxService = nginxService;
+        this.applicationService = applicationService;
+    }
 
     @GetMapping
     public String doGet(Model model) {
-        Iterable<Application> apps = applicationRepository.findAll();
+        Iterable<Application> apps = applicationService.findAll();
         model.addAttribute("apps", apps);
         return "proxy-config";
     }
 
     @PostMapping
-    public String doPost(@RequestParam String appName,
-                         @RequestParam String host,
-                         @RequestParam int port,
-                         Model model) {
-        Application app = new Application(appName, host, port);
-        applicationRepository.save(app);
-        setHost(host, port);
-        reloadNginx();
+    public String doPost(Application application, Model model) {
+        Iterable<Application> apps = applicationService.findAll();
+        model.addAttribute("apps", apps);
+        if (applicationService.isValid(application)) {
+            Application app = applicationService.save(application);
+            log.info("Host changed to " + app.toString());
+            //nginxService.setHostTo(app);
+        } else {
+            model.addAttribute("block", true);
+            model.addAttribute("blockedIp", application.getHost());
+            log.info("New host blocked " + application);
+        }
+
         return "proxy-config";
     }
 
-    private void reloadNginx() {
-        try {
-            Process proc = Runtime.getRuntime().exec(NGINX_RELOAD);
-            proc.waitFor();
-            proc.destroy();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setHost(String host, int port) {
-        try (FileWriter writer = new FileWriter(confPath, false);
-             FileReader reader = new FileReader(templatePath)) {
-            StringBuilder sb = new StringBuilder();
-            int c;
-            while ((c = reader.read()) != -1) {
-                sb.append((char) c);
-            }
-            Formatter formatter = new Formatter();
-            formatter.format(sb.toString(), host, port);
-            writer.write(String.valueOf(formatter));
-            writer.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

@@ -9,18 +9,25 @@
 <body>
 <div class="container mt-5 mb-5">
     <h1>Welcome to proxy-config</h1>
-    <h3>You can choose previously used application... </h3>
-
-    <div th:each="app : ${apps}" class="alert alert-info mt-2">
-        <h3 th:text="${app.applicationName}"></h3>
-        <a th:href="" class="btn btn-outline-success">Choose</a>
+    <div th:if="${block}" class="alert alert-danger">
+        <h4 th:text="'IP '+ ${blockedIp}+ ' in stop list! Please contact your system administrator.'"></h4>
     </div>
-
+    <h3>You can choose previously used application... </h3>
+    <div th:each="app : ${apps}" class="alert alert-info mt-2">
+        <h4 th:text="${app.applicationName}"></h4>
+        <p th:text="${app.host} +':'+ ${app.port}"></p>
+        <form method="post" th:object="${application}">
+            <input type="hidden" name="applicationName" th:value="${app.applicationName}">
+            <input type="hidden" name="host" th:value="${app.host}">
+            <input type="hidden" name="port" th:value="${app.port}">
+            <button type="submit" class="btn btn-outline-success">Choose</button>
+        </form>
+    </div>
     <form method="post">
         <h3>or add new application</h3>
-        <input type="text" name="appName" placeholder="Insert application name" class="form-control"><br>
-        <input type="text" name="host" placeholder="Insert IP" class="form-control"><br>
-        <input type="text" name="port" placeholder="Insert port" class="form-control"><br>
+        <input type="text" name="applicationName" placeholder="Application name" class="form-control"><br>
+        <input type="text" name="host" placeholder="IP" class="form-control"><br>
+        <input type="text" name="port" placeholder="Port" class="form-control"><br>
         <button type="submit" class="btn btn-outline-success">Add new application</button>
     </form>
 </div>
