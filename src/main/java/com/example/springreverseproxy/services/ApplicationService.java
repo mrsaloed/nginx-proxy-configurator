@@ -28,7 +28,7 @@ public class ApplicationService {
         return applicationRepository.findAll();
     }
 
-    public boolean isValid(Application application) {
-        return !nginxService.getBlockList().contains(application.getHost());
+    public boolean isBlocked(Application application) {
+        return nginxService.getBlockList().contains(application.getHost());
     }
 }
