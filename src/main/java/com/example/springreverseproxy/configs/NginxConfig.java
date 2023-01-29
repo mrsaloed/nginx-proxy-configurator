@@ -13,4 +13,5 @@ public class NginxConfig {
     private HashSet<String> ipBlockList = new HashSet<>();
     private String configPath;
     private String templatePath;
+    private String redirectHost;
 }

@@ -1,5 +1,6 @@
 package com.example.springreverseproxy.controllers;
 
+import com.example.springreverseproxy.exceptions.NginxConfigurationException;
 import com.example.springreverseproxy.models.Application;
 
 import com.example.springreverseproxy.services.ApplicationService;
@@ -38,25 +39,23 @@ public class ProxyController {
     }
 
     @PostMapping
-    public String doPost(@Valid Application application, Errors errors, Model model) {
+    public String doPost(@Valid Application application, Errors inputErrors, Model model) {
         Iterable<Application> apps = applicationService.findAll();
         model.addAttribute("apps", apps);
-        if (errors.hasErrors()) {
-            log.info("Errors in " + application);
+        if (inputErrors.hasErrors()) {
             return "proxy-config";
         }
-        if (!applicationService.isBlocked(application)) {
-            Application app = applicationService.save(application);
-            log.info("Host changed to " + app);
-            //nginxService.setHostTo(app);
-            return "redirect:https://ya.ru";
-        } else {
-            model.addAttribute("block", true);
-            model.addAttribute("blockedIp", application.getHost());
-            log.info("New host blocked " + application);
+        try {
+            nginxService.setHostTo(application);
+            log.info("Host changed to " + application);
+            applicationService.save(application);
+            log.info("Application saved to DB. " + application);
+            return "redirect:" + nginxService.getRedirectHost();
+        } catch (NginxConfigurationException e) {
+            model.addAttribute("error", true);
+            model.addAttribute("errorMsg", e.getMessage());
+            log.error("Error host changing.", e);
             return "proxy-config";
         }
-
     }
-
 }

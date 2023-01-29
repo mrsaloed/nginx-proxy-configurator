@@ -4,12 +4,14 @@ nginx:
   ip-block-list:
     - "192.168.0.1"
     - "192.168.0.2"
-  #Path to nginx.conf file
+  #Path to "nginx.conf" file
   config-path: "/usr/local/etc/nginx/nginx.conf"
   #Path to the template. Based on it, conf.path is compiled
   template-path: "nginx-config-template.txt"
+  #IP or URL to redirect after success reload nginx
+  redirect-host: "https://ya.ru"
 
-#default spring settings
+#spring settings
 spring:
   datasource:
     url: jdbc:h2:file:~/data/applicationProxyDB

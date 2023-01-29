@@ -1,0 +1,30 @@
+<!--Block with a form for displaying previously used applications from the DB and selecting one-->
+<div th:fragment="used-apps" class="container mt-5 mb-5">
+    <h3>or choose previously used application</h3>
+    <div class="card-columns">
+        <div th:each="app : ${apps}" class="card w-100 h-50 mt-2">
+            <h4 th:text="${app.applicationName}" class="card-header"></h4>
+            <div class="card-body">
+                <p th:text="'IP: ' + ${app.host}" class="card-text"></p>
+                <p th:text="'Port: ' + ${app.port}" class="card-text"></p>
+                <form method="post" th:object="${application}">
+                    <input type="hidden" name="applicationName" th:value="${app.applicationName}">
+                    <input type="hidden" name="host" th:value="${app.host}">
+                    <input type="hidden" name="port" th:value="${app.port}">
+                    <button type="submit" class="btn btn-outline-success">Choose</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Style for the "used-apps" block-->
+<style th:fragment="style-for-used-apps">
+    .card-columns {
+        column-count: 4;
+    }
+
+    .card {
+        display: inline-block;
+    }
+</style>

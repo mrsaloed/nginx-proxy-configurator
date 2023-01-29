@@ -9,13 +9,10 @@ import java.util.Optional;
 
 @Service
 public class ApplicationService {
-
-    private final NginxService nginxService;
     private final ApplicationRepository applicationRepository;
 
     @Autowired
-    public ApplicationService(NginxService nginxService, ApplicationRepository applicationRepository) {
-        this.nginxService = nginxService;
+    public ApplicationService(ApplicationRepository applicationRepository) {
         this.applicationRepository = applicationRepository;
     }
 
@@ -28,7 +25,4 @@ public class ApplicationService {
         return applicationRepository.findAll();
     }
 
-    public boolean isBlocked(Application application) {
-        return nginxService.getBlockList().contains(application.getHost());
-    }
 }
